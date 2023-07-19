@@ -4,20 +4,28 @@ import matplotlib.pyplot as plt
 import random
 import pandas as pd
 from openpyxl import load_workbook
+import sys
 location = 0.0
-min_location = int(input("min : "))
-exerRange = int(input("range : "))
-duration = float(input("time per rep : "))
+# min_location = int(input("min : "))
+# exerRange = int(input("range : "))
+# rep = int(input("rep : "))
+# duration = float(input("time per rep : "))
 # min_location = 100
 # exerRange = 40
-print(min_location)
-print(exerRange)
+# rep = 6
+# duration = 1.5
+min_location = int(sys.argv[1])
+exerRange = int(sys.argv[2])
+rep = int(sys.argv[3])
+duration = float(sys.argv[4])
+k = exerRange*2/int(duration*100)
+# min_location = 100
+# exerRange = 40
 isUp = -2
 time = round(0.0,2)
 count = 0
 is_done=0
 temp_time=0.0
-rep = random.randrange(3,7)
 #rep = 6
 rand_start_time = round(random.uniform(1.0,2.5), 2)
 rand_ready_time = round(random.uniform(1.0,1.5),2)
@@ -52,52 +60,52 @@ def randomData(location, rep,min_location, exerRange):
     elif isUp == 1:
         temp=0
         vibe = random.choices([1,2], [10,1])
-        if location>min_location+1.4*exerRange:
+        if location>min_location+1.3*exerRange:
             choice = [2]
-        elif exerRange*0.6+min_location<location:
-            choice = random.choices([1,2], [exerRange*3.0,1])
+        elif exerRange*0.65+min_location<location:
+            choice = random.choices([1,2], [exerRange*2.0,1])
         else :
             choice = random.choices([1,2], [100000,1])
             temp=1
         #0.2~0.3
         if(temp==1 and choice[0]==2):
-            print("up..")
+            # print("up..")
             temp=0
         if choice[0] == 2:
-            print("max")
-            print(location)
-            print("")
+            # print("max")
+            # print(location)
+            # print("")
             isUp=0
             count+=1
         if vibe[0] == 2 :
             location -= round(random.uniform(0.0,0.1),4)
         else :
-            location += round(random.uniform(0.2,0.3),4)
+            location += round(random.uniform(k-0.02,k+0.1),4)
         if count == rep:
             is_done = 1
     elif isUp == 0:
         vibe = random.choices([1,2], [10,1])
         temp=0
-        if min_location-0.4*exerRange >location:
+        if min_location-0.3*exerRange >location:
             choice = [2]
-        elif min_location+(exerRange*0.2)>location:
-            choice = random.choices([1,2], [exerRange*3.0,1])
+        elif min_location+(exerRange*0.35)>location:
+            choice = random.choices([1,2], [exerRange*2.0,1])
         else :
             choice = random.choices([1,2], [100000,1])
             temp=1
         if(temp==1 and choice[0]==2):
-            print("down..")
+            # print("down..")
             temp=0
         #0.2~0.3
         if choice[0] == 2 :
             isUp=1
-            print("min")
-            print(location)
-            print("")
+            # print("min")
+            # print(location)
+            # print("")
         if vibe[0] == 2 :
             location += round(random.uniform(0.0,0.1),4)
         else:
-            location -= round(random.uniform(0.2,0.3),4)
+            location -= round(random.uniform(k-0.02,k+0.1),4)
         if(location<0):
             location = 0    
     time+=0.01
@@ -120,9 +128,7 @@ while is_done==0 or is_done==1:
     num = num +1
     
 # DataFrame ?��?��
-
 #T_workbook.save("random_generator.xlsx") 
-
 save_data = {'location': data, 'time':time_data}
 save_data = pd.DataFrame(save_data)
 save_data.to_excel(excel_writer='random_generator.xlsx')
