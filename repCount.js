@@ -1,5 +1,4 @@
 const spawn = require('child_process').spawn;
-const { exec } = require('child_process');
 const xlsx = require( "xlsx" );
 
 // 2. spawn을 통해 "python 파이썬파일.py" 명령어 실행
@@ -35,6 +34,9 @@ let time = 0;
 let diffAverage = 0;
 let for_graph_location = []
 let for_graph_time = []
+let lastMin = 0.0;
+let lastTime = 0.0;
+let check = 0;
 function counting(data){
     if(count%5===0){ // 50ms 마다 확인
         if(data.location-tempData>=1.0){ // 내리다가 올리는 상황이 되는 경우
@@ -94,6 +96,7 @@ function counting(data){
                 max = 0;
             }
             isUp = 0;
+            check = 0;
         }
         else{
             
@@ -101,6 +104,11 @@ function counting(data){
         tempData = data.location;
     }
     count++;
+    if(data.location<min_location && isUp === 0 && check === 0){
+        lastMin = data.location;
+        lastTime = data.time;
+        check = 1;
+    }
     if(data.location>max && isUp === 1){
         max = data.location;
         time = data.time;
@@ -110,7 +118,6 @@ function counting(data){
         min = data.location;
         time = data.time;
     }
-
 }
 
 result.on('close', function(code){
@@ -130,6 +137,8 @@ result.on('close', function(code){
             console.log(tempMax);
             console.log(minAvg);
             if(diffAverage*0.5<=tempMax-minAvg){
+                for_graph_location.push(lastMin);
+                for_graph_time.push(lastTime);
                 rep++;
             }
             console.log(exerMax);
